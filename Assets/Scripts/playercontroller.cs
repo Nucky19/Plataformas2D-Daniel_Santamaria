@@ -10,7 +10,7 @@ public class playermovement : MonoBehaviour
     [SerializeField]private float jumpForce = 6.5f; 
     [SerializeField]private float characterSpeed = 4.5f;
     [SerializeField]private int healtPoints = 3;
-
+    private bool isAttacking;
 
 
     void Awake()
@@ -23,28 +23,46 @@ public class playermovement : MonoBehaviour
     {
         Run();
         Jump();
+        if(Input.GetButtonDown("Fire1") && groundsensor.isGrounded && !isAttacking) Attack();
     }
 
+       void FixedUpdate()
+    {
+        characterRigidbody.velocity = new Vector2(horizontalInput * characterSpeed, characterRigidbody.velocity.y); 
+    }
 
     void Run(){
-        horizontalInput = Input.GetAxis("Horizontal");
-
-         if(horizontalInput < 0){
+        
+        if(isAttacking) horizontalInput=0; //Attack = no move
+        else horizontalInput = Input.GetAxis("Horizontal");
+        if(horizontalInput == 0){
+            anim.SetBool("IsRunning",false);
+        }
+        else if(horizontalInput < 0){
             transform.rotation = Quaternion.Euler( 0, 180, 0);
-            anim.SetBool("IsRunning",true);
-         }else if(horizontalInput > 0){
+            anim.SetBool("IsRunning",true); 
+        }else if(horizontalInput > 0){
             transform.rotation = Quaternion.Euler( 0, 0, 0);
             anim.SetBool("IsRunning",true);
-         }else{
-            anim.SetBool("IsRunning",false);
          }
     }
 
     void Jump(){
-        if(Input.GetButtonDown("Jump") && groundsensor.isGrounded){
+        if(Input.GetButtonDown("Jump") && groundsensor.isGrounded && !isAttacking){
             characterRigidbody.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
             anim.SetBool("IsJumping",true);
         }
+    }
+
+    void Attack(){
+        StartCoroutine(AttackAnimation());
+        anim.SetTrigger("IsAttacking");
+    }
+
+    IEnumerator AttackAnimation(){
+        isAttacking=true;
+        yield return new WaitForSeconds(0.4f);
+        isAttacking=false;
     }
 
     void OnCollisionEnter2D(Collision2D collision){
@@ -55,18 +73,15 @@ public class playermovement : MonoBehaviour
 
     void TakeDamage(){
         healtPoints-=1;
-        if(healtPoints==0) Die();
-        anim.SetTrigger("IsHurt");
+        if(healtPoints<=0) Die();
+        else anim.SetTrigger("IsHurt");
     }
 
     void Die(){
-            anim.SetBool("IsDead",true);
-            Destroy(gameObject, 0.35f);
+        anim.SetTrigger("IsDead");
+        Destroy(gameObject, 0.35f);
     }
 
     // Update is called once per frame
-    void FixedUpdate()
-    {
-        characterRigidbody.velocity = new Vector2(horizontalInput * characterSpeed, characterRigidbody.velocity.y); 
-    }
+ 
 }
