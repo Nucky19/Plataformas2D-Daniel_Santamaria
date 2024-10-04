@@ -11,6 +11,7 @@ public class playermovement : MonoBehaviour
     [SerializeField]private float characterSpeed = 4.5f;
     [SerializeField]private int healtPoints = 3;
     private bool isAttacking;
+    private bool isMoving;
 
     [SerializeField] private Transform attackHitBox;
     [SerializeField] private float attackRadius = 0.45f;
@@ -33,8 +34,12 @@ public class playermovement : MonoBehaviour
 
     void Run(){
         
-        if(isAttacking) horizontalInput=0; // If attack = no move
+        if(isAttacking && !isMoving) horizontalInput=0; // If attack = no move
         else horizontalInput = Input.GetAxis("Horizontal");
+        
+        if(horizontalInput!=0) isMoving=true;
+        else isMoving=false;
+
         if(horizontalInput == 0){
             anim.SetBool("IsRunning",false);
         }
@@ -44,7 +49,7 @@ public class playermovement : MonoBehaviour
         }else if(horizontalInput > 0){
             transform.rotation = Quaternion.Euler( 0, 0, 0);
             anim.SetBool("IsRunning",true);
-         }
+        }
     }
 
     void Jump(){
@@ -56,7 +61,9 @@ public class playermovement : MonoBehaviour
 
     void Attack(){
         StartCoroutine(AttackAnimation());
+        if (isMoving) anim.SetBool("IsRunning",true);
         anim.SetTrigger("IsAttacking");
+
     }
 
     IEnumerator AttackAnimation(){
@@ -77,6 +84,7 @@ public class playermovement : MonoBehaviour
 
         yield return new WaitForSeconds(0.4f);
         isAttacking=false;
+        // if(isMoving) anim.SetBool("IsRunning",false);
     }
 
     void TakeDamage(){
