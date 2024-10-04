@@ -12,6 +12,8 @@ public class playermovement : MonoBehaviour
     [SerializeField]private int healtPoints = 3;
     private bool isAttacking;
 
+    [SerializeField] private Transform attackHitBox;
+    [SerializeField] private float attackRadius = 0.45f;
 
     void Awake()
     {
@@ -19,21 +21,19 @@ public class playermovement : MonoBehaviour
         anim = GetComponent<Animator>();
     }
 
-    void Update()
-    {
+    void Update(){
         Run();
         Jump();
         if(Input.GetButtonDown("Fire1") && groundsensor.isGrounded && !isAttacking) Attack();
     }
 
-       void FixedUpdate()
-    {
+       void FixedUpdate(){
         characterRigidbody.velocity = new Vector2(horizontalInput * characterSpeed, characterRigidbody.velocity.y); 
     }
 
     void Run(){
         
-        if(isAttacking) horizontalInput=0; //Attack = no move
+        if(isAttacking) horizontalInput=0; // If attack = no move
         else horizontalInput = Input.GetAxis("Horizontal");
         if(horizontalInput == 0){
             anim.SetBool("IsRunning",false);
@@ -61,14 +61,22 @@ public class playermovement : MonoBehaviour
 
     IEnumerator AttackAnimation(){
         isAttacking=true;
+
+        yield return new WaitForSeconds(0.2f);
+        
+        Collider2D[] collider = Physics2D.OverlapCircleAll(attackHitBox.position, attackRadius);
+        foreach (Collider2D obj in collider){
+            if(obj.gameObject.CompareTag("Mimik")) {
+                Rigidbody2D enemyRigidbody = obj.GetComponent<Rigidbody2D>();
+                enemyRigidbody.AddForce(transform.right + transform.up * 2, ForceMode2D.Impulse);
+
+                Mimik mimik= obj.GetComponent<Mimik>();
+                mimik.TakeDamage();
+            };
+        }
+
         yield return new WaitForSeconds(0.4f);
         isAttacking=false;
-    }
-
-    void OnCollisionEnter2D(Collision2D collision){
-        if(collision.gameObject.tag=="Enemy"){
-            TakeDamage();
-        } 
     }
 
     void TakeDamage(){
@@ -82,6 +90,14 @@ public class playermovement : MonoBehaviour
         Destroy(gameObject, 0.35f);
     }
 
-    // Update is called once per frame
- 
+    void OnCollisionEnter2D(Collision2D collision){
+        if(collision.gameObject.layer==3){
+            TakeDamage();
+        } 
+    }
+
+    void OnDrawGizmos(){
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(attackHitBox.position, attackRadius);
+    }
 }
