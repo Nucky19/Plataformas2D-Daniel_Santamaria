@@ -26,6 +26,7 @@ public class playermovement : MonoBehaviour
         Run();
         Jump();
         if(Input.GetButtonDown("Fire1") && groundsensor.isGrounded && !isAttacking) Attack();
+        if(Input.GetKeyDown(KeyCode.P)) GameManager.instance.Pause();
     }
 
        void FixedUpdate(){
@@ -34,11 +35,11 @@ public class playermovement : MonoBehaviour
 
     void Run(){
         
-        if(isAttacking && !isMoving) horizontalInput=0; // If attack = no move
+        if(isAttacking && horizontalInput==0) horizontalInput=0; // If attack = no move
         else horizontalInput = Input.GetAxis("Horizontal");
         
-        if(horizontalInput!=0) isMoving=true;
-        else isMoving=false;
+        // if(horizontalInput!=0) isMoving=true;
+        // else isMoving=false;
 
         if(horizontalInput == 0){
             anim.SetBool("IsRunning",false);
@@ -56,12 +57,13 @@ public class playermovement : MonoBehaviour
         if(Input.GetButtonDown("Jump") && groundsensor.isGrounded && !isAttacking){
             characterRigidbody.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
             anim.SetBool("IsJumping",true);
+            SoundManager.instance.PlaySFX(SoundManager.instance.jumpAudio);
         }
     }
 
     void Attack(){
         StartCoroutine(AttackAnimation());
-        if (isMoving) anim.SetBool("IsRunning",true);
+        if (horizontalInput!=0) anim.SetBool("IsRunning",true);
         anim.SetTrigger("IsAttacking");
 
     }
@@ -87,20 +89,27 @@ public class playermovement : MonoBehaviour
         // if(isMoving) anim.SetBool("IsRunning",false);
     }
 
-    void TakeDamage(){
-        healtPoints-=1;
+    void TakeDamage(int damage){
+        healtPoints-=damage;
         if(healtPoints<=0) Die();
         else anim.SetTrigger("IsHurt");
+
+        // RANDOM AUDIO WHEN TAKE DAMAGE    
+        // AudioClip[] audios;
+        // int randomAudio = Random.Range(0,audios.Length);
+        // SoundManager.instance.PlaySFX(audios[randomAudio]);
+    
     }
 
     void Die(){
         anim.SetTrigger("IsDead");
+        SoundManager.instance.PlaySFX(SoundManager.instance.deathAudio);
         Destroy(gameObject, 0.35f);
     }
 
     void OnCollisionEnter2D(Collision2D collision){
         if(collision.gameObject.layer==3){
-            TakeDamage();
+            TakeDamage(1);
         } 
     }
 
