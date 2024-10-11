@@ -13,12 +13,24 @@ public class BGMManager : MonoBehaviour
         else instance = this;
 
         _audioSource = GetComponent<AudioSource>();
+
+        _audioSource.loop = true;
+        _audioSource.mute = true;
     }
 
     public void PlayBGM(AudioClip audio){
         _audioSource.clip=audio;
         _audioSource.Play();
     }
+
+    public void StopBGM(){
+        _audioSource.Stop();
+    }
+    public void PauseBGM(){
+        _audioSource.Pause();
+    }
+
+
 
     
 }

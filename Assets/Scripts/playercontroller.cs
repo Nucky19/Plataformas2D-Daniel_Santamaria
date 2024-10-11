@@ -6,6 +6,7 @@ public class playermovement : MonoBehaviour
 {
     private Rigidbody2D characterRigidbody;
     public static Animator anim;
+    public AudioSource audioSource;
     private float horizontalInput;
     [SerializeField]private float jumpForce = 6.5f; 
     [SerializeField]private float characterSpeed = 4.5f;
@@ -16,10 +17,11 @@ public class playermovement : MonoBehaviour
     [SerializeField] private Transform attackHitBox;
     [SerializeField] private float attackRadius = 0.45f;
 
-    void Awake()
-    {
+
+    void Awake(){
         characterRigidbody = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
+        audioSource = GetComponent<AudioSource>();
     }
 
     void Update(){
@@ -57,7 +59,7 @@ public class playermovement : MonoBehaviour
         if(Input.GetButtonDown("Jump") && groundsensor.isGrounded && !isAttacking){
             characterRigidbody.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
             anim.SetBool("IsJumping",true);
-            SoundManager.instance.PlaySFX(SoundManager.instance.jumpAudio);
+            SoundManager.instance.PlaySFX(audioSource, SoundManager.instance.jumpAudio);
         }
     }
 
@@ -103,7 +105,7 @@ public class playermovement : MonoBehaviour
 
     void Die(){
         anim.SetTrigger("IsDead");
-        SoundManager.instance.PlaySFX(SoundManager.instance.deathAudio);
+        SoundManager.instance.PlaySFX(audioSource, SoundManager.instance.deathAudio);
         Destroy(gameObject, 0.35f);
     }
 

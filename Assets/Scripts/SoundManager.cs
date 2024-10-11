@@ -5,20 +5,22 @@ using UnityEngine;
 public class SoundManager : MonoBehaviour
 {
     public static SoundManager instance;
-    private AudioSource _audioSource;
+    public AudioSource audioSource;
     public AudioClip coinAudio;
     public AudioClip jumpAudio;
     public AudioClip deathAudio;
     public AudioClip damageTakenAudio;
+    public AudioClip mimikAudio;
+    
     
     void Awake(){
         if(instance != null && instance != this) Destroy(gameObject);
         else instance = this;
 
-        _audioSource = GetComponent<AudioSource>();
+        audioSource = GetComponent<AudioSource>();
     }
 
-    public void PlaySFX(AudioClip audio){
-        _audioSource.PlayOneShot(audio);
+    public void PlaySFX(AudioSource audioSource, AudioClip audio){
+        audioSource.PlayOneShot(audio);
     }
 }

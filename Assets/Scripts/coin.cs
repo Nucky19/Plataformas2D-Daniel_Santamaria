@@ -6,17 +6,18 @@ public class coin : MonoBehaviour
 {
 
     private bool interactable;
+    public AudioSource audioSource;
+
     // Start is called before the first frame update
-    void Start()
-    {
-        
+    void Awake(){
+        audioSource = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
     void Update(){
         if(interactable && Input.GetKeyDown(KeyCode.E)) {
             GameManager.instance.AddCoin();
-            SoundManager.instance.PlaySFX(SoundManager.instance.coinAudio);
+            SoundManager.instance.PlaySFX(audioSource,SoundManager.instance.coinAudio);
             Destroy(gameObject);
         }
     }
