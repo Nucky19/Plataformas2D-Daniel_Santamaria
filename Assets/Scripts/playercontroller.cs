@@ -27,7 +27,7 @@ public class playermovement : MonoBehaviour
     void Update(){
         Run();
         Jump();
-        if(Input.GetButtonDown("Fire1") && groundsensor.isGrounded && !isAttacking) Attack();
+        if(Input.GetButtonDown("Fire1") && groundsensor.isGrounded && !isAttacking) StartAttack(); //Attack();
         if(Input.GetKeyDown(KeyCode.P)) GameManager.instance.Pause();
     }
 
@@ -63,18 +63,41 @@ public class playermovement : MonoBehaviour
         }
     }
 
-    void Attack(){
-        StartCoroutine(AttackAnimation());
-        if (horizontalInput!=0) anim.SetBool("IsRunning",true);
+    // void Attack(){
+    //     StartCoroutine(AttackAnimation());
+    //     if (horizontalInput!=0) anim.SetBool("IsRunning",true);
+    //     anim.SetTrigger("IsAttacking");
+
+    // }
+
+    // IEnumerator AttackAnimation(){
+    //     isAttacking=true;
+
+    //     yield return new WaitForSeconds(0.2f);
+        
+    //     Collider2D[] collider = Physics2D.OverlapCircleAll(attackHitBox.position, attackRadius);
+    //     foreach (Collider2D obj in collider){
+    //         if(obj.gameObject.CompareTag("Mimik")) {
+    //             Rigidbody2D enemyRigidbody = obj.GetComponent<Rigidbody2D>();
+    //             enemyRigidbody.AddForce(transform.right + transform.up * 2, ForceMode2D.Impulse);
+
+    //             Mimik mimik= obj.GetComponent<Mimik>();
+    //             mimik.TakeDamage();
+    //         };
+    //     }
+
+    //     yield return new WaitForSeconds(0.4f);
+    //     isAttacking=false;
+    //     // if(isMoving) anim.SetBool("IsRunning",false);
+    // }
+
+    void StartAttack(){
+        isAttacking = true;
         anim.SetTrigger("IsAttacking");
 
     }
 
-    IEnumerator AttackAnimation(){
-        isAttacking=true;
-
-        yield return new WaitForSeconds(0.2f);
-        
+    void Attack(){
         Collider2D[] collider = Physics2D.OverlapCircleAll(attackHitBox.position, attackRadius);
         foreach (Collider2D obj in collider){
             if(obj.gameObject.CompareTag("Mimik")) {
@@ -83,12 +106,12 @@ public class playermovement : MonoBehaviour
 
                 Mimik mimik= obj.GetComponent<Mimik>();
                 mimik.TakeDamage();
-            };
+            }
         }
+    }
 
-        yield return new WaitForSeconds(0.4f);
+    void EndAttack(){
         isAttacking=false;
-        // if(isMoving) anim.SetBool("IsRunning",false);
     }
 
     void TakeDamage(int damage){
