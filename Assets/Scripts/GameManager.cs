@@ -11,7 +11,9 @@ public class GameManager : MonoBehaviour
     private int coins = 0;
     private int currentStars = 0;
     [SerializeField] GameObject _pauseCanvas;
-    [SerializeField] GameObject _stars;
+    [SerializeField] Image[] _stars;
+
+    [SerializeField] Sprite _starBrightSprite;
 
     void Awake(){
         if(instance != null && instance != this) Destroy(gameObject);
@@ -19,6 +21,7 @@ public class GameManager : MonoBehaviour
     }
     void Start(){
         BGMManager.instance.PlayBGM(BGMManager.instance.bgmsound);
+        // _starBrightSprite = Resources.Load<Sprite>("Sprites/UI/star_bright");
     }
     public void AddCoin(){
         coins+=1;
@@ -28,8 +31,10 @@ public class GameManager : MonoBehaviour
         //TODO: Array de GameObject que almacene las 4 imagenes de las estrellas.
         //When AddStar -> Array busca según currentStars. Y selecciona la imagen según la cantidad de estrellas que tengas. 
         
-        currentStars+=1;
-        // _coinText.text=coins.ToString();
+        if(currentStars >= 0 && currentStars < 4){ //_stars.Length
+            _stars[currentStars].sprite = _starBrightSprite;
+            currentStars += 1;     
+        } 
 
     }
     public void Pause(){
