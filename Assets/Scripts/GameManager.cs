@@ -12,12 +12,13 @@ public class GameManager : MonoBehaviour
     private int currentStars = 0;
     [SerializeField] GameObject _pauseCanvas;
     [SerializeField] Image[] _stars;
-
     [SerializeField] Sprite _starBrightSprite;
-
+    private Animator _pauseMenuAnimator;
+    private bool pauseAnimation=false;
     void Awake(){
         if(instance != null && instance != this) Destroy(gameObject);
         else instance = this;
+        // _pauseMenuAnimator=_pauseCanvas.GetComponentsInChildren<Animator>();
     }
     void Start(){
         BGMManager.instance.PlayBGM(BGMManager.instance.bgmsound);
@@ -38,14 +39,22 @@ public class GameManager : MonoBehaviour
 
     }
     public void Pause(){
-        if(!isPaused) {
-            Time.timeScale=0;
+        if(!isPaused && !pauseAnimation) {
             isPaused=true;
+            Time.timeScale=0;
             _pauseCanvas.SetActive(true);
-        }else {
+        }else if(isPaused && !pauseAnimation){
+            pauseAnimation=true;
+            StartCoroutine(ClosePauseAnimation());
+        }
+    }
+
+    IEnumerator ClosePauseAnimation(){
+            _pauseMenuAnimator.SetBool("Close",true);
+            yield return new WaitForSecondsRealtime(0.15f);
             Time.timeScale=1;
             isPaused = false;
             _pauseCanvas.SetActive(false);
-        }
+            pauseAnimation=false;
     }
 }
