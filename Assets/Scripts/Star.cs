@@ -19,6 +19,9 @@ public class Star : MonoBehaviour
     }
 
     void OnTriggerEnter2D(Collider2D collider){
-        if(collider.gameObject.CompareTag("Stars")) GameManager.instance.AddStar();
+        if(collider.gameObject.CompareTag("Player")) {
+            GameManager.instance.AddStar();
+            Destroy(gameObject,0.1f);
+        }
     }
 }

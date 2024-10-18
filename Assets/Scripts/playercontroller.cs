@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Dynamic;
 using UnityEngine;
 
 public class playermovement : MonoBehaviour
@@ -10,18 +11,23 @@ public class playermovement : MonoBehaviour
     private float horizontalInput;
     [SerializeField]private float jumpForce = 6.5f; 
     [SerializeField]private float characterSpeed = 4.5f;
-    [SerializeField]private int healtPoints = 3;
+    [SerializeField]public int _currentHealth {get; private set;}
+    [SerializeField]public int  _maxHealth {get; private set;} = 3; 
     private bool isAttacking;
     private bool isMoving;
 
     [SerializeField] private Transform attackHitBox;
     [SerializeField] private float attackRadius = 0.45f;
 
-
     void Awake(){
         characterRigidbody = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         audioSource = GetComponent<AudioSource>();
+    }
+
+    void Start(){
+        _currentHealth=_maxHealth;
+        GameManager.instance.SetHealthBar(_maxHealth);
     }
 
     void Update(){
@@ -115,8 +121,9 @@ public class playermovement : MonoBehaviour
     }
 
     void TakeDamage(int damage){
-        healtPoints-=damage;
-        if(healtPoints<=0) Die();
+        _currentHealth-=damage;
+        GameManager.instance.UpdateHealthBar(_currentHealth);
+        if(_currentHealth<=0) Die();
         else anim.SetTrigger("IsHurt");
 
         // RANDOM AUDIO WHEN TAKE DAMAGE    
@@ -132,11 +139,24 @@ public class playermovement : MonoBehaviour
         Destroy(gameObject, 0.35f);
     }
 
+    void HealthUp(int health){
+            _currentHealth+=health;
+            if(_currentHealth>_maxHealth) _currentHealth= _maxHealth;
+            GameManager.instance.UpdateHealthBar(_currentHealth);
+    }
+
     void OnCollisionEnter2D(Collision2D collision){
         if(collision.gameObject.layer==3){
             TakeDamage(1);
         } 
     }
+    void OnTriggerEnter2D(Collider2D collider){
+        if(collider.gameObject.CompareTag("Health") && _currentHealth<_maxHealth){
+            HealthUp(1);
+            Destroy(collider.gameObject);
+        } 
+    }
+    
 
     void OnDrawGizmos(){
         Gizmos.color = Color.red;

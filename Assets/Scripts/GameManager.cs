@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -9,10 +10,11 @@ public class GameManager : MonoBehaviour
     private bool isPaused;
     [SerializeField] Text _coinText;
     private int coins = 0;
-    private int currentStars = 0;
     [SerializeField] GameObject _pauseCanvas;
-    [SerializeField] Image[] _stars;
-    [SerializeField] Sprite _starBrightSprite;
+    [SerializeField] private int currentStars = 0;
+    [SerializeField] private Image[] _stars;
+    [SerializeField] private Sprite _starBrightSprite;
+    [SerializeField] Slider _healthBar;
     private Animator _pauseMenuAnimator;
     private bool pauseAnimation=false;
     void Awake(){
@@ -22,17 +24,13 @@ public class GameManager : MonoBehaviour
     }
     void Start(){
         BGMManager.instance.PlayBGM(BGMManager.instance.bgmsound);
-        // _starBrightSprite = Resources.Load<Sprite>("Sprites/UI/star_bright");
     }
     public void AddCoin(){
         coins+=1;
         _coinText.text=coins.ToString();
     }
     public void AddStar(){ 
-        //TODO: Array de GameObject que almacene las 4 imagenes de las estrellas.
-        //When AddStar -> Array busca según currentStars. Y selecciona la imagen según la cantidad de estrellas que tengas. 
-        
-        if(currentStars >= 0 && currentStars < 4){ //_stars.Length
+        if(currentStars < 4){ //_stars.Length
             _stars[currentStars].sprite = _starBrightSprite;
             currentStars += 1;     
         } 
@@ -56,5 +54,16 @@ public class GameManager : MonoBehaviour
             isPaused = false;
             _pauseCanvas.SetActive(false);
             pauseAnimation=false;
+    }
+    public void SetHealthBar(int _maxHealth){
+        _healthBar.maxValue=_maxHealth;
+        _healthBar.value=_maxHealth;
+    }
+    public void UpdateHealthBar(int health){
+        _healthBar.value = health;
+    }
+
+    public void SceneLoader(string scene){
+        SceneManager.LoadScene(scene);
     }
 }
