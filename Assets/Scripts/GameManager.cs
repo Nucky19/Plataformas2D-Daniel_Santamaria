@@ -15,7 +15,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Image[] _stars;
     [SerializeField] private Sprite _starBrightSprite;
     [SerializeField] Slider _healthBar;
-    private Animator _pauseMenuAnimator;
+    [SerializeField] private Animator _pauseMenuAnimator;
     private bool pauseAnimation=false;
     void Awake(){
         if(instance != null && instance != this) Destroy(gameObject);
@@ -25,6 +25,10 @@ public class GameManager : MonoBehaviour
     void Start(){
         BGMManager.instance.PlayBGM(BGMManager.instance.bgmsound);
     }
+
+    // void Update(){
+    //     if(Input.GetKeyDown(KeyCode.L)) StartCoroutine(LoadAsync("Main Menu"));
+    // }
     public void AddCoin(){
         coins+=1;
         _coinText.text=coins.ToString();
@@ -48,7 +52,7 @@ public class GameManager : MonoBehaviour
     }
 
     IEnumerator ClosePauseAnimation(){
-            _pauseMenuAnimator.SetBool("Close",true);
+            _pauseMenuAnimator.SetBool("close",true);
             yield return new WaitForSecondsRealtime(0.15f);
             Time.timeScale=1;
             isPaused = false;
@@ -66,4 +70,9 @@ public class GameManager : MonoBehaviour
     public void SceneLoader(string scene){
         SceneManager.LoadScene(scene);
     }
+
+    // IEnumerator LoadAsync(string scene){
+    //     AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(scene);
+    //     while(!asyncLoad.isDone)  yield return null;
+    // }
 }
