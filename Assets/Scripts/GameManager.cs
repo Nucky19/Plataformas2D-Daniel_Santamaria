@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] Text _coinText;
     private int coins = 0;
     [SerializeField] GameObject _pauseCanvas;
+    [SerializeField] GameObject _winCanvas;
     [SerializeField] private int currentStars = 0;
     [SerializeField] private Image[] _stars;
     [SerializeField] private Sprite _starBrightSprite;
@@ -23,6 +24,7 @@ public class GameManager : MonoBehaviour
         _pauseMenuAnimator=_pauseCanvas.GetComponentInChildren<Animator>();
     }
     void Start(){
+        Time.timeScale=1;
         BGMManager.instance.PlayBGM(BGMManager.instance.bgmsound);
     }
 
@@ -37,7 +39,11 @@ public class GameManager : MonoBehaviour
         if(currentStars < 4){ //_stars.Length
             _stars[currentStars].sprite = _starBrightSprite;
             currentStars += 1;     
-        } 
+        }
+        if(currentStars>=4) {
+            _winCanvas.SetActive(true);
+            Time.timeScale=0;
+        }
 
     }
     public void Pause(){
@@ -59,6 +65,7 @@ public class GameManager : MonoBehaviour
             _pauseCanvas.SetActive(false);
             pauseAnimation=false;
     }
+   
     public void SetHealthBar(int _maxHealth){
         _healthBar.maxValue=_maxHealth;
         _healthBar.value=_maxHealth;
