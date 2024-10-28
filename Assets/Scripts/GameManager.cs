@@ -20,7 +20,7 @@ public class GameManager : MonoBehaviour
     void Awake(){
         if(instance != null && instance != this) Destroy(gameObject);
         else instance = this;
-        // _pauseMenuAnimator=_pauseCanvas.GetComponentsInChildren<Animator>();
+        _pauseMenuAnimator=_pauseCanvas.GetComponentInChildren<Animator>();
     }
     void Start(){
         BGMManager.instance.PlayBGM(BGMManager.instance.bgmsound);

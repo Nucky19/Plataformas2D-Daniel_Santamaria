@@ -154,7 +154,8 @@ public class playermovement : MonoBehaviour
         if(collider.gameObject.CompareTag("Health") && _currentHealth<_maxHealth){
             HealthUp(1);
             Destroy(collider.gameObject);
-        } 
+        }
+        if(collider.gameObject.CompareTag("Void")) GameManager.instance.SceneLoader("GameOver");
     }
     
 
